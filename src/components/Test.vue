@@ -11,7 +11,7 @@
       </li>
       <p>Решение оптимально? - <span>{{checkForOptimal(task)}}</span></p>  
         
-          <div v-if="!task.optimal" v-for="i in 10" :key="i" class="simplex-step">
+          <div v-if="!task.optimal" v-for="i in 20" :key="i" class="simplex-step">
             <div v-if="task.beforeSim">
               <p>Избавляемся от отрицательных значений правой части если они есть...</p>
               {{beforeSimplex(task)}}
@@ -48,7 +48,7 @@
 
           </div>
           <div v-else>
-            {{insertNewRow(task)}}
+            
             
             <div class="list" v-for="row in task.matr" :key="row">
               <span class="matrix-item" v-for="el in row" :key="el">
@@ -57,12 +57,24 @@
             </div>
             <br>
             <br>
-            {{gomoriStep(task)}}
-            <div class="list" v-for="row in task.matr" :key="row">
-              <span class="matrix-item" v-for="el in row" :key="el">
-                {{el.toFixed(2)}}
-              </span>
-            </div>
+
+              {{insertNewRow(task)}}
+              <p>Добавляем новое ограничение</p>
+              <div class="list" v-for="row in task.matr" :key="row">
+                <span class="matrix-item" v-for="el in row" :key="el">
+                  {{el.toFixed(2)}}
+                </span>
+              </div>
+
+              <br>
+              {{gomoriStep(task)}}
+              <p>Выполняем шаг Гомори</p>
+              <div class="list" v-for="row in task.matr" :key="row">
+                <span class="matrix-item" v-for="el in row" :key="el">
+                  {{el.toFixed(2)}}
+                </span>
+              </div> 
+              
 
             <p><b>F(X) = {{-task.matr[task.matr.length-1][task.matr[task.matr.length-1].length - 1].toFixed(2)}}</b></p>
           </div>
@@ -155,6 +167,7 @@
             arrRight: [4, 2, 0],
             signs: ['<=', '<=', '>='],
           },
+  
           
         ]
       }
@@ -384,7 +397,7 @@
       checkForInteger(task){
         const arr = this.basisRowEls(task)
         for(let el of arr){
-          if((el ^ 0) !== el){
+          if(el.toFixed(2) !== (Math.round(el).toFixed(2))){
             task.integer = false
             return 
           }
@@ -393,11 +406,13 @@
         return        
       },
       curDrobElIdx(task){
-        const arr = []
+        let arr = []
         for(let el of this.basisRowEls(task)){
-          arr.push(el - Math.floor(el))
+          arr.push(el.toFixed(2) - (Math.floor(el).toFixed(2)))
         }
+        arr = arr.filter(el => el !== 0 && el !== 1)
         const idx = arr.indexOf(Math.max(...arr))
+
         return idx
       },
       
@@ -406,17 +421,24 @@
         arr.pop()
         arr.pop()
         arr = arr.map(el => {
-          return el - Math.floor(el)
+          return (el.toFixed(2) - (Math.floor(el).toFixed(2)) ) == 1 ? 0 : (el.toFixed(2) - (Math.floor(el).toFixed(2)) )
         })
         arr.push(-1)
         let lastEl = this.basisRowEls(task)[this.curDrobElIdx(task)]
         lastEl = lastEl - Math.floor(lastEl)
         arr.push(lastEl)
         arr = arr.map(el => el*-1)
-        
+        // if(arr.filter(el => el == 0).length >= arr.length - 2){
+          
+        //   return false
+        // }
         return arr
       },
       insertNewRow(task){
+        // if(this.newRow(task) === false){
+        //   task.unsolveable = true
+        //   return
+        // }
         for(let row of task.matr){
           row.splice(row.length - 1, 0, 0)
         }
@@ -425,6 +447,7 @@
         return
       },
       gomoriStep(task){
+        // this.insertNewRow(task)
         let arr = [].slice.call(task.matr)
         let F = [].slice.call(arr[arr.length - 1])
         F.pop()
@@ -449,13 +472,12 @@
             return el
           }
         })
-
-        return
+        return this.checkForInteger(task)
       },
-      
+
       /*TODO:
       [+] Реализовать beforeSimplex
-      [+-] Реализовать метод Гомори
+      [+] Реализовать метод Гомори
       [+] Проверить решается ли задача
       [не нужно] Избавиться от цикла от 1 до 10, найти альтернативу 
       [-] Создать отдельную страницу с вводом данных пользователем (исп. vue-router)
