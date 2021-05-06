@@ -1,10 +1,12 @@
 <template>
   <div>
+    <a v-if="testsPage" class="main-link" href="/">Перейти к калькулятору</a>
+
     <ul v-for="(task, idx) in tasks" :key="'A' + idx">
       {{
         start(task)
       }}
-      <h1>Новая задача</h1>
+      <h1>Задача №{{ idx + 1 }}</h1>
       <li
         class="list"
         v-for="(el, rowI) in task.matr"
@@ -127,126 +129,16 @@
 </template>
 
 <script>
+import db from "@/assets/tests.json";
 export default {
   name: "tests",
   props: ["tasks"],
   data() {
     return {
-      tasks: [
-        // {
-        //   type: "max",
-        //   func: [1, 2],
-        //   array: [
-        //     [-1, 2],
-        //     [1, 1],
-        //     [1, -1],
-        //     [0, 1]
-        //   ],
-        //   arrRight: [2, 4, 2, 6],
-        //   signs: [">=", ">=", "<=", "<="],
-        //   test: true,
-        // },
-        // {
-        //   type: "max",
-        //   func: [4, 5, 6],
-        //   array: [
-        //     [1, 2, 3],
-        //     [4, 3, 2],
-        //     [3, 1, 1]
-        //   ],
-        //   arrRight: [35, 45, 40],
-        //   signs: ["<=", "<=", "<="],
-        //   test: true,
-        // },
-        // {
-        //   type: "max",
-        //   func: [1, -1],
-        //   array: [
-        //     [-2, 3],
-        //     [1, -2],
-        //     [1, 1]
-        //   ],
-        //   arrRight: [9, 2, 8],
-        //   signs: [">=", ">=", "<="],
-        //   test: true,
-        // },
-        // {
-        //   type: "max",
-        //   func: [1, 2, 3],
-        //   array: [
-        //     [1, -1, 2],
-        //     [4, 30, 2],
-        //     [2, 3, -4]
-        //   ],
-        //   arrRight: [5, 4, 0],
-        //   signs: [">=", ">=", "<="],
-        //   test: true,
-        // },
-        // {
-        //   type: "max",
-        //   func: [7, -9],
-        //   array: [
-        //     [2, 1],
-        //     [0, 3],
-        //     [4, 5]
-        //   ],
-        //   arrRight: [9, 7, 5],
-        //   signs: ["<=", "<=", "<="],
-        //   test: true,
-        // },
-        // {
-        //   type: "max",
-        //   func: [6, 1],
-        //   array: [
-        //     [3, -1],
-        //     [2, 3],
-        //     [-1, 4]
-        //   ],
-        //   arrRight: [9, 50, 18],
-        //   signs: [">=", "<=", ">="],
-        //   test: true,
-        // },
-        // {
-        //   type: "max",
-        //   func: [1, -1, 1, 2],
-        //   array: [
-        //     [1, -1, 2, 4],
-        //     [3, 4, 3, 2],
-        //     [3, 1, 0, 2]
-        //   ],
-        //   arrRight: [4, 2, 0],
-        //   signs: ["<=", "<=", ">="],
-        //   test: true,
-        // },
-        // {
-        //   type: "min",
-        //   func: [6, 1],
-        //   array: [
-        //     [3, -1],
-        //     [2, 3],
-        //     [-1, 4]
-        //   ],
-        //   arrRight: [9, 50, 18],
-        //   signs: [">=", "<=", ">="],
-        //   test: true,
-        // },
-        // {
-        //   type: "min",
-        //   func: [2, 1, -2],
-        //   array: [
-        //     [1, 1, -1],
-        //     [1, -1, 2],
-        //     [-2, -8, 3]
-        //   ],
-        //   arrRight: [8, 2, 1],
-        //   signs: [">=", ">=", ">="],
-        //   test: true,
-        // }
-      ]
+      testsPage: false
     };
   },
   methods: {
-    // canon менял
     canon(task) {
       let basisElems = [];
       basisElems.length = task.array.length;
@@ -287,7 +179,6 @@ export default {
       return matrix;
     },
     start(task) {
-      // task.matr = task.matrix()
       task.matr = this.setMatrix(task);
 
       for (let i = 0; i < task.matr.length; i++) {
@@ -500,17 +391,10 @@ export default {
       lastEl = lastEl - Math.floor(lastEl);
       arr.push(lastEl);
       arr = arr.map(el => el * -1);
-      // if(arr.filter(el => el == 0).length >= arr.length - 2){
 
-      //   return false
-      // }
       return arr;
     },
     insertNewRow(task) {
-      // if(this.newRow(task) === false){
-      //   task.unsolveable = true
-      //   return
-      // }
       for (let row of task.matr) {
         row.splice(row.length - 1, 0, 0);
       }
@@ -522,7 +406,6 @@ export default {
     },
     gomoriStep(task) {
       task.gomori = true;
-      // this.insertNewRow(task)
       let arr = [].slice.call(task.matr);
       let F = [].slice.call(arr[arr.length - 1]);
       F.pop();
@@ -551,26 +434,17 @@ export default {
       return this.checkForInteger(task);
     },
     F(task) {
-      return task.type === "max" && task.gomori
-        ? -task.matr[task.matr.length - 1][task.matr[0].length - 1]
-        : task.type === "max" && !task.gomori
-        ? task.matr[task.matr.length - 1][task.matr[0].length - 1]
-        : task.type === "min" && task.gomori
-        ? task.matr[task.matr.length - 1][task.matr[0].length - 1]
-        : -task.matr[task.matr.length - 1][task.matr[0].length - 1];
+      return Math.abs(task.matr[task.matr.length - 1][task.matr[0].length - 1]);
     }
+  },
+  created() {
+    const curPage = document.URL.split("/")[document.URL.split("/").length - 1];
+    console.log(db);
 
-    /*TODO:
-      [+] Реализовать beforeSimplex
-      [+] Реализовать метод Гомори
-      [+] Проверить решается ли задача
-      [+] Сделать решение для задач на минимум
-      [-] Создать отдельную страницу с вводом данных пользователем (исп. vue-router)
-      [-] Подробное решение скрыть
-        [-] Добавить кнопку показа подробного решения
-
-
-      */
+    if (curPage === "tests") {
+      this.testsPage = true;
+      this.tasks = db;
+    }
   }
 };
 </script>
@@ -599,5 +473,15 @@ ul {
 .activeRow {
   border-top: 3px solid rgb(30, 255, 0);
   border-bottom: 3px solid rgb(30, 255, 0);
+}
+.main-link {
+  display: inline-block;
+  padding: 15px;
+  font-size: 20px;
+  margin: 5px;
+  background: rgb(223, 223, 223);
+  border: 1px solid black;
+  color: rgb(15, 15, 15);
+  text-decoration: none;
 }
 </style>

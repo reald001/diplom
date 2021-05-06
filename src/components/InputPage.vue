@@ -1,8 +1,12 @@
 <template>
   <div>
+    
+    <a class="test-link" href="/tests">Перейти к тестам</a>
+     
     <h3>
       Количество переменных:
       <select
+      @change="resetInputs"
         name="select-1"
         id="select-1"
         v-model.number="xCount"
@@ -10,12 +14,14 @@
         <option value="2">2</option>
         <option value="3">3</option>
         <option value="4">4</option>
+        <option value="5">5</option>
       </select>
     </h3>
 
     <h3>
       Количество неравенств:
       <select
+      @change="resetInputs"
         name="select-2"
         id="select-2"
         v-model.number="equationCount"
@@ -24,7 +30,6 @@
         <option value="3">3</option>
         <option value="4">4</option>
         <option value="5">5</option>
-        <option value="6">6</option>
         
       </select>
     </h3>
@@ -68,6 +73,7 @@
             class="input-select"
             v-for="i in equationCount"
             :key="'znak-' + i"
+            v-model="task.signs[i-1]"
           >
             <option value=">=">&gt;=</option>
             <option value="<=">&lt;=</option>
@@ -84,6 +90,7 @@
 
       <Tests :tasks="tasks"> </Tests>
     </div>
+   
   </div>
 </template>
 
@@ -96,27 +103,26 @@ export default {
   data() {
     return {
       tasks: [],
-      // task: {
-      //   type: "max",
-      //   func: [1, 2],
-      //   array: [[2, -1], [1, 3], [2, 0]],
-      //   arrRight: [1, 2, 5],
-      //   signs: ['>=', '<=', '>=']
-      // },
       task: {
         type: "max",
-        func: [],
-        array: [[], [], []],
-        arrRight: [],
-        signs: []
+        func: [6, 1],
+        array: [[3, -1], [2, 3], [-1, 4]],
+        arrRight: [9, 50, 18],
+        signs: ['>=', '<=', '>=']
       },
-      helpArr: [],
-      xCount: 2, //null
-      equationCount: 3, //null
-      inputArea: true //false
+      helpArr: [3, -1, 2, 3, -1, 4],
+      xCount: 2,
+      equationCount: 3, 
+      inputArea: true 
     };
   },
   methods: {
+    resetInputs(){
+      this.helpArr = []
+      this.task.func = []
+      this.task.arrRight = []
+      this.task.signs = []
+    },
     solve() {
       this.task.array = []
       for(let i = 0; i < this.equationCount; i++){
@@ -126,26 +132,14 @@ export default {
         }
       }
       
+      
       if (this.tasks.length) {
         this.tasks.pop();
       }
       this.tasks.push(this.task);
+      console.log(this.task);
     },
-    // rowsChanged() {
-    //   this.array = []
-    //   // this.array.push([])
-    //   // while(this.array.length > this.equationCount){
-    //   //   this.array.pop()
-    //   // }
-    //   // while(this.array.length < this.equationCount){
-    //   //   this.array.push([])
-    //   // }
-    //   for (let i = 0; i < this.equationCount; i++) {
-    //     this.array.push([]);
-    //   }
-    //   console.log(this.array);
-    //   return this.array;
-    // }
+
   }
 };
 </script>
@@ -212,5 +206,15 @@ export default {
 }
 .input-field {
   margin-top: 20px;
+}
+.test-link{
+  display: inline-block;
+  padding: 15px;
+  font-size: 20px;
+  margin: 5px;
+  background: rgb(223, 223, 223);
+  border: 1px solid black;
+  color: rgb(15, 15, 15);
+  text-decoration: none;
 }
 </style>

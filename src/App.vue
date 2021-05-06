@@ -1,7 +1,6 @@
 <template>
   <div id="app">
-    
-    <InputPage/>
+     <router-view />
   </div>
 </template>
 
@@ -16,6 +15,8 @@ export default {
     InputPage
   }
 }
+
+
 </script>
 
 <style>
@@ -25,6 +26,9 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  margin-top: 30px;
+}
+ul{
+  padding: 0;
 }
 </style>
