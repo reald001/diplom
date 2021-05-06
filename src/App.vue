@@ -1,16 +1,19 @@
 <template>
   <div id="app">
-    <Test/>
+    
+    <InputPage/>
   </div>
 </template>
 
 <script>
-import Test from './components/Test'
+import Tests from './components/Tests'
+import InputPage from './components/InputPage'
 
 export default {
   name: 'App',
   components: {
-    Test
+    Tests,
+    InputPage
   }
 }
 </script>
